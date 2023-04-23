@@ -1,0 +1,6 @@
+# Binaries and build output
+/bin/
+
+# Generated files
+*.pb.go
+

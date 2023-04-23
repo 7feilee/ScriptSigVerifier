@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package ScriptSigVerifier.proto;
+
+option go_package = "ScriptSigVerifier/internal/proto;proto";
+
+service ScriptVerifier {
+    rpc ExecuteScript (ExecuteScriptRequest) returns (ExecuteScriptResponse);
+}
+
+message ExecuteScriptRequest {
+    string script = 1;
+}
+
+message ExecuteScriptResponse {
+    string status = 1;
+    string output = 2;
+}
