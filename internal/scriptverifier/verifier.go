@@ -9,6 +9,7 @@ import (
 	"io/ioutil"
 	"log"
 	"path/filepath"
+	"strings"
 	"sync"
 
 	"github.com/fsnotify/fsnotify"
@@ -63,35 +64,37 @@ func loadPublicKeys(certDir string) (map[string]*rsa.PublicKey, error) {
 	}
 
 	for _, file := range files {
-		certData, err := ioutil.ReadFile(filepath.Join(certDir, file.Name()))
-		if err != nil {
-			return nil, fmt.Errorf("failed to read certificate file %s: %v", file.Name(), err)
-		}
+		if !file.IsDir() && !strings.HasPrefix(file.Name(), ".") {
+			certData, err := ioutil.ReadFile(filepath.Join(certDir, file.Name()))
+			if err != nil {
+				return nil, fmt.Errorf("failed to read certificate file %s: %v", file.Name(), err)
+			}
 
-		block, _ := pem.Decode(certData)
-		if block == nil {
-			log.Printf("Failed to parse the certificate in file %s", file.Name())
-			continue
-		}
+			block, _ := pem.Decode(certData)
+			if block == nil {
+				log.Printf("Failed to parse the certificate in file %s", file.Name())
+				continue
+			}
 
-		cert, err := x509.ParseCertificate(block.Bytes)
-		if err != nil {
-			log.Printf("Failed to parse certificate in file %s: %v", file.Name(), err)
-			continue
-		}
+			cert, err := x509.ParseCertificate(block.Bytes)
+			if err != nil {
+				log.Printf("Failed to parse certificate in file %s: %v", file.Name(), err)
+				continue
+			}
 
-		if !IsCodeSigningCertificate(cert) {
-			log.Printf("Certificate in file %s is not a code signing certificate", file.Name())
-			continue
-		}
+			if !IsCodeSigningCertificate(cert) {
+				log.Printf("Certificate in file %s is not a code signing certificate", file.Name())
+				continue
+			}
 
-		publicKey, ok := cert.PublicKey.(*rsa.PublicKey)
-		if !ok {
-			log.Printf("Unexpected public key type in file %s", file.Name())
-			continue
-		}
+			publicKey, ok := cert.PublicKey.(*rsa.PublicKey)
+			if !ok {
+				log.Printf("Unexpected public key type in file %s", file.Name())
+				continue
+			}
 
-		newPublicKeyPool[file.Name()] = publicKey
+			newPublicKeyPool[file.Name()] = publicKey
+		}
 	}
 
 	return newPublicKeyPool, nil
