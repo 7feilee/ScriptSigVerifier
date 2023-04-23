@@ -29,21 +29,13 @@
 ## Prerequisites
 * Go 1.20 or higher
 * Protocol Buffers Compiler ([protoc](https://grpc.io/docs/protoc-installation/))
-* Go protobuf plugins: `protoc-gen-go` and `protoc-gen-go-grpc`
-
-Run the following command to install them:
-
-```bash
-go install -u google.golang.org/protobuf/cmd/protoc-gen-go@latest 
-go install -u google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
-```
-
 
 ## Build
+
 To build the project, run the following commands:
 
 ```bash
-chmod+x build.sh && ./build.sh
+chmod +x build.sh && ./build.sh
 ```
 
 This will create the server executable in the `bin` directory.
@@ -111,13 +103,12 @@ To run the test cases, start two terminals. In the first terminal, run the serve
 
 ```bash
 ./bin/server --cert-dir=test/certs
-
 ```
 
 In the second terminal, run the tests:
 
 ```bash
-go test -v test/
+go test -v ./test
 ```
 
 ## TODO
